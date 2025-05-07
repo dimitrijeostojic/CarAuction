@@ -2,6 +2,7 @@
 //using AuctionService.Mappings;
 //using Microsoft.EntityFrameworkCore;
 
+using AuctionService.Consumers;
 using AuctionService.Data;
 using AuctionService.Mappings;
 using AuctionService.Middlewares;
@@ -9,6 +10,7 @@ using AuctionService.Repositories.Implamentations;
 using AuctionService.Repositories.Interfaces;
 using AuctionService.Services.Implementations;
 using AuctionService.Services.Interfaces;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -68,6 +70,25 @@ builder.Services.AddSwaggerGen();
 //});
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
+
+//adding masstransit
+builder.Services.AddMassTransit(x =>
+{
+    x.AddEntityFrameworkOutbox<AuctionDbContext>(o =>
+    {
+        o.QueryDelay = TimeSpan.FromSeconds(5);
+        o.UseSqlServer();
+        o.UseBusOutbox();
+    });
+
+    x.AddConsumersFromNamespaceContaining<AuctionCreatedFaultConsumer>();
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 
 //dodajemo konekcione stringove iz konfiguracije

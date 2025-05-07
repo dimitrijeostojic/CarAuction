@@ -1,6 +1,10 @@
 ﻿using AuctionService.Data;
 using AuctionService.Entities.Domain;
 using AuctionService.Repositories.Interfaces;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Contracts;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuctionService.Repositories.Implamentations
@@ -8,10 +12,14 @@ namespace AuctionService.Repositories.Implamentations
     public class AuctionRepository : IAuctionRepository
     {
         private readonly AuctionDbContext dbContext;
+        private readonly IMapper mapper;
+        private readonly IPublishEndpoint publishEndpoint;
 
-        public AuctionRepository(AuctionDbContext dbContext)
+        public AuctionRepository(AuctionDbContext dbContext, IMapper mapper, IPublishEndpoint publishEndpoint)
         {
             this.dbContext = dbContext;
+            this.mapper = mapper;
+            this.publishEndpoint = publishEndpoint;
         }
 
         public async Task<bool> CreateAuctionAsync(Auction auction)
@@ -29,6 +37,9 @@ namespace AuctionService.Repositories.Implamentations
                 return null;
             }
             dbContext.Auctions.Remove(auction);
+
+            await publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
+
             var result = await dbContext.SaveChangesAsync() > 0;
             if (!result)
             {
@@ -37,9 +48,20 @@ namespace AuctionService.Repositories.Implamentations
                 return auction;
         }
 
-        public async Task<List<Auction>> GetAllAuctionsAsync()
+        public async Task<IQueryable<Auction>> GetAllAuctionsAsync(DateTime? date)
         {
-            return await dbContext.Auctions.Include(x => x.Item).OrderBy(x => x.Item.Make).ToListAsync();
+
+            var query = dbContext.Auctions.OrderBy(x => x.Item.Make).AsQueryable();
+            //if (!string.IsNullOrEmpty(date))
+            //{
+            //    query = query.Where(x => x.UpdatedAt.CompareTo(DateTime.Parse(date).ToUniversalTime()) > 0);
+            //}
+            if (date.HasValue)
+            {
+                query = query.Where(x => x.UpdatedAt > date.Value.ToUniversalTime());
+            }
+                return query;
+            //return await dbContext.Auctions.Include(x => x.Item).OrderBy(x => x.Item.Make).ToListAsync();
         }
 
         public async Task<Auction?> GetAuctionByIdAsync(Guid id)
@@ -64,6 +86,8 @@ namespace AuctionService.Repositories.Implamentations
             existingAuction.Item.Color = auction.Item.Color ?? existingAuction.Item.Color;
             existingAuction.Item.Mileage = auction.Item.Mileage;
             existingAuction.Item.Year = auction.Item.Year;
+
+            await publishEndpoint.Publish<AuctionUpdated>(mapper.Map<AuctionUpdated>(existingAuction));
             var result = await dbContext.SaveChangesAsync() > 0;
             if (!result)
             {

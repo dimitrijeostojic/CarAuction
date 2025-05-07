@@ -1,6 +1,7 @@
 ﻿using AuctionService.Entities.Domain;
 using AuctionService.Entities.DTOs;
 using AutoMapper;
+using Contracts;
 
 namespace AuctionService.Mappings
 {
@@ -15,6 +16,9 @@ namespace AuctionService.Mappings
             CreateMap<UpdateAuctionDto, Auction>().ForMember(d=>d.Item, o=>o.MapFrom(s=>s)).ReverseMap();
             CreateMap<CreateAuctionDto, Item>().ReverseMap();
             CreateMap<UpdateAuctionDto, Item>().ReverseMap();
+            CreateMap<AuctionDto, AuctionCreated>().ReverseMap();
+            CreateMap<Auction, AuctionUpdated>().IncludeMembers(a=>a.Item).ReverseMap();
+            CreateMap<Item, AuctionUpdated>().ReverseMap();
         }
     }
 }

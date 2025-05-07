@@ -5,7 +5,7 @@ namespace AuctionService.Repositories.Interfaces
 {
     public interface IAuctionRepository
     {
-        Task<List<Auction>> GetAllAuctionsAsync();
+        Task<IQueryable<Auction>> GetAllAuctionsAsync(DateTime? date);
         Task<Auction?> GetAuctionByIdAsync(Guid id);
         Task<bool> CreateAuctionAsync(Auction auction);
         Task<Auction?> UpdateAuctionAsync(Guid id, Auction auction);

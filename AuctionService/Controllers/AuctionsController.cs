@@ -20,11 +20,12 @@ namespace AuctionService.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAuctions()
+        public async Task<IActionResult> GetAllAuctions([FromQuery] DateTime? date)
         {
-            var auctionsDto = await auctionsService.GetAllAuctionAsync();
+            var auctionsDto = await auctionsService.GetAllAuctionAsync(date);
             return Ok(auctionsDto);
         }
+
 
         [HttpGet]
         [Route("{id:Guid}")]

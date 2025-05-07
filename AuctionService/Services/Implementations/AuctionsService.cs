@@ -3,6 +3,10 @@ using AuctionService.Entities.DTOs;
 using AuctionService.Repositories.Interfaces;
 using AuctionService.Services.Interfaces;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Contracts;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuctionService.Services.Implementations
 {
@@ -10,11 +14,13 @@ namespace AuctionService.Services.Implementations
     {
         private readonly IAuctionRepository auctionRepository;
         private readonly IMapper mapper;
+        private readonly IPublishEndpoint publishEndpoint;
 
-        public AuctionsService(IAuctionRepository auctionRepository, IMapper mapper)
+        public AuctionsService(IAuctionRepository auctionRepository, IMapper mapper,IPublishEndpoint publishEndpoint)
         {
             this.auctionRepository = auctionRepository;
             this.mapper = mapper;
+            this.publishEndpoint = publishEndpoint;
         }
 
         public async Task<AuctionDto?> CreateAuctionAsync(CreateAuctionDto createAuctionDto)
@@ -22,7 +28,11 @@ namespace AuctionService.Services.Implementations
             var auction = mapper.Map<Auction>(createAuctionDto);
             auction.Seller = "test";
 
+            var newAuction = mapper.Map<AuctionDto>(auction);
+            await publishEndpoint.Publish(mapper.Map<AuctionCreated>(newAuction));
+
             var result = await auctionRepository.CreateAuctionAsync(auction);
+
             return result ? mapper.Map<AuctionDto>(auction) : null;
         }
 
@@ -37,12 +47,12 @@ namespace AuctionService.Services.Implementations
             return null;
         }
 
-        public async Task<List<AuctionDto>> GetAllAuctionAsync()
+        public async Task<List<AuctionDto>> GetAllAuctionAsync(DateTime? date)
         {
             //domain
-            var auctions = await auctionRepository.GetAllAuctionsAsync();
-            //map to dto
-            return mapper.Map<List<AuctionDto>>(auctions);
+            var query = await auctionRepository.GetAllAuctionsAsync(date);
+
+            return await query.ProjectTo<AuctionDto>(mapper.ConfigurationProvider).ToListAsync();
         }
 
         public async Task<AuctionDto?> GetAuctionByIdAsync(Guid id)
@@ -63,6 +73,7 @@ namespace AuctionService.Services.Implementations
             //{
             //    throw new Exception("Seller must be 'username'");
             //}
+
             var auctionDomain = await auctionRepository.UpdateAuctionAsync(id, updateAuctionDomain);
             if (auctionDomain == null)
             {

@@ -29,10 +29,10 @@ namespace AuctionService.Services.Implementations
             //TODO: add current user as seller
             auction.Seller = "test";
 
-            var newAuction = mapper.Map<AuctionDto>(auction);
-            await publishEndpoint.Publish(mapper.Map<AuctionCreated>(newAuction));
-
             await dbContext.AddAsync(auction);
+            var newAuction = mapper.Map<AuctionDto>(auction);
+
+            await publishEndpoint.Publish<AuctionCreated>(mapper.Map<AuctionCreated>(newAuction));
             var result = await dbContext.SaveChangesAsync() > 0;
 
             return result ? mapper.Map<AuctionDto>(auction) : null;

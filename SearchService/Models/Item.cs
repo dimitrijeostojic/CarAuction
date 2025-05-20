@@ -4,7 +4,7 @@ namespace SearchService.Models
 {
     public class Item : Entity
     {
-        //ID obezbedjuje klasa Entity iz mongodb.entities
+        //ID has been provided from mongodb.entities
         //public Guid Id { get; set; }
         public DateTime CreatedAt { get; set; } = new DateTime(2025, 4, 29);
         public DateTime UpdatedAt { get; set; } = new DateTime(2025, 4, 29);

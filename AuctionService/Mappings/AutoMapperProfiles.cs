@@ -16,8 +16,11 @@ namespace AuctionService.Mappings
             CreateMap<CreateAuctionDto, Item>().ReverseMap();
             CreateMap<UpdateAuctionDto, Auction>().ForMember(d=>d.Item, o=>o.MapFrom(s=>s)).ReverseMap();
             CreateMap<UpdateAuctionDto, Item>().ReverseMap();
+
             CreateMap<AuctionDto, AuctionCreated>().ReverseMap();
+
             CreateMap<Auction, AuctionUpdated>().IncludeMembers(a=>a.Item).ReverseMap();
+
             CreateMap<Item, AuctionUpdated>().ReverseMap();
         }
     }

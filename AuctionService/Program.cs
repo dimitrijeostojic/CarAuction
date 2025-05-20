@@ -6,8 +6,6 @@ using AuctionService.Consumers;
 using AuctionService.Data;
 using AuctionService.Mappings;
 using AuctionService.Middlewares;
-using AuctionService.Repositories.Implamentations;
-using AuctionService.Repositories.Interfaces;
 using AuctionService.Services.Implementations;
 using AuctionService.Services.Interfaces;
 using MassTransit;
@@ -68,10 +66,9 @@ builder.Services.AddSwaggerGen();
 //    });
 
 //});
-
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
-//adding masstransit
+//adding masstransit for producer
 builder.Services.AddMassTransit(x =>
 {
     x.AddEntityFrameworkOutbox<AuctionDbContext>(o =>
@@ -93,10 +90,6 @@ builder.Services.AddMassTransit(x =>
 
 //dodajemo konekcione stringove iz konfiguracije
 builder.Services.AddDbContext<AuctionDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
-//repositories
-builder.Services.AddScoped<IAuctionRepository, AuctionRepository>();
 
 
 //services
@@ -150,6 +143,7 @@ builder.Services.AddScoped<IAuctionsService, AuctionsService>();
 //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
 //});
 
+//cors konfiguracija
 builder.Services.AddCors(options =>
 {
 options.AddPolicy("AllowAllOrigins",
@@ -164,8 +158,6 @@ policy.AllowAnyOrigin()
 var app = builder.Build();
 
 app.UseCors("AllowAllOrigins");
-
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -184,5 +176,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-

@@ -17,6 +17,8 @@ namespace AuctionService.Entities.Domain
         public DateTime AuctionEnd { get; set; }
         public Status Status { get; set; }
         public Guid ItemId { get; set; }
+
+        //nav property
         public Item Item { get; set; }
     }
 }

@@ -64,7 +64,8 @@ namespace AuctionService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemId");
+                    b.HasIndex("ItemId")
+                        .IsUnique();
 
                     b.ToTable("Auctions");
 
@@ -499,8 +500,8 @@ namespace AuctionService.Migrations
             modelBuilder.Entity("AuctionService.Entities.Domain.Auction", b =>
                 {
                     b.HasOne("AuctionService.Entities.Domain.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
+                        .WithOne("Auction")
+                        .HasForeignKey("AuctionService.Entities.Domain.Auction", "ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -517,6 +518,12 @@ namespace AuctionService.Migrations
                         .WithMany()
                         .HasForeignKey("InboxMessageId", "InboxConsumerId")
                         .HasPrincipalKey("MessageId", "ConsumerId");
+                });
+
+            modelBuilder.Entity("AuctionService.Entities.Domain.Item", b =>
+                {
+                    b.Navigation("Auction")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -19,6 +19,13 @@ namespace AuctionService.Data
             modelBuilder.AddOutboxMessageEntity();
             modelBuilder.AddOutboxStateEntity();
 
+            modelBuilder.Entity<Auction>()
+            .HasOne(a => a.Item)
+            .WithOne(i => i.Auction)
+            .HasForeignKey<Auction>(a => a.ItemId);
+
+
+
             var items = new List<Item>()
             {
                 new Item { Id = Guid.Parse("247f3fd9-d34d-4f72-8f2c-c38a4be7e3a4"), Make = "Ford", Model = "GT", Color = "White", Mileage = 50000, Year = 2020, ImageUrl = "https://cdn.pixabay.com/photo/2016/05/06/16/32/car-1376190_960_720.jpg" },

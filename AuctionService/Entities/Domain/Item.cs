@@ -14,5 +14,8 @@ namespace AuctionService.Entities.Domain
         public int Mileage { get; set; }
         public string ImageUrl { get; set; }
 
+        //nav property
+        public Auction Auction { get; set; }
+
     }
 }

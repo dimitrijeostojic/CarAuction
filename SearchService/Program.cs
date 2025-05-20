@@ -23,6 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddHttpClient<AuctionSvcHttpClient>().AddPolicyHandler(GetPolicy());
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
+//adding masstranist for consumer
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumersFromNamespaceContaining<AuctionCreatedConsumer>();
@@ -44,6 +45,7 @@ builder.Services.AddMassTransit(x =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//cors konfuguracija
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -89,10 +91,7 @@ app.Lifetime.ApplicationStarted.Register(async () =>
     }
 });
 
-
-
 app.Run();
-
 
 static IAsyncPolicy<HttpResponseMessage> GetPolicy()
     => HttpPolicyExtensions

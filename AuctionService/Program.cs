@@ -132,16 +132,14 @@ builder.Services.AddScoped<IAuctionsService, AuctionsService>();
 //});
 
 //dodajemo pravila za autentikaciju
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters
-//{
-//ValidateIssuer = true,
-//ValidateAudience = true,
-//ValidateLifetime = true,
-//ValidateIssuerSigningKey = true,
-//ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//ValidAudiences = new[] { builder.Configuration["Jwt:Audience"] },
-//IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-//});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.Authority = builder.Configuration["IdentityServiceUrl"];
+    options.RequireHttpsMetadata = false; // Set to true in production
+    options.TokenValidationParameters.ValidateAudience = false; // Disable audience validation for simplicity
+    options.TokenValidationParameters.NameClaimType="username"; // Set the claim type for username
+
+});
 
 //cors konfiguracija
 builder.Services.AddCors(options =>
@@ -169,7 +167,7 @@ app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 
-//dodajemo autentikaciju u middleware
+//we have to add this middleware
 app.UseAuthentication();
 app.UseAuthorization();
 

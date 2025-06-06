@@ -9,7 +9,7 @@ namespace AuctionService.Consumers
         {
             Console.WriteLine("--> Consuming faulty creation");
 
-            var exception = context.Message.Exceptions.FirstOrDefault();
+            var exception = context.Message.Exceptions.First();
             if (exception.ExceptionType == "System.ArgumentException")
             {
                 context.Message.Message.Model = "FooBar";

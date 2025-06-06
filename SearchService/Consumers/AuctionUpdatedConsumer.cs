@@ -27,7 +27,8 @@ namespace SearchService.Consumers
                     x.Color,
                     x.Make,
                     x.Model,
-                    x.Year
+                    x.Year,
+                    x.Mileage
                 },item)
                 .ExecuteAsync();
             if (!result.IsAcknowledged)

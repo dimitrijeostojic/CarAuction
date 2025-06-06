@@ -2,6 +2,7 @@
 using AuctionService.Entities.DTOs;
 using AuctionService.Services.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,10 +40,11 @@ namespace AuctionService.Controllers
             return Ok(auctionDto);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionDto createAuctionDto)
         {
-            var auctionDto = await auctionsService.CreateAuctionAsync(createAuctionDto);
+            var auctionDto = await auctionsService.CreateAuctionAsync(createAuctionDto,User);
             if (auctionDto == null)
             {
                 return BadRequest("Auction creation failed");
@@ -50,29 +52,44 @@ namespace AuctionService.Controllers
             return CreatedAtAction(nameof(GetAuctionById), new { id = auctionDto.Id }, auctionDto);
         }
 
-
+        [Authorize]
         [HttpPut]
         [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateAuction([FromRoute] Guid id, [FromBody] UpdateAuctionDto updateAuctionDto)
         {
-            var auctionDto = await auctionsService.UpdateAuctionAsync(id, updateAuctionDto);
-            if (auctionDto == null)
+            try
             {
-                return NotFound();
+                var auctionDto = await auctionsService.UpdateAuctionAsync(id, updateAuctionDto, User);
+                if (auctionDto == null)
+                {
+                    return NotFound();
+                }
+                return Ok(auctionDto);
             }
-            return Ok(auctionDto);
+            catch (Exception ex)
+            {
+                return Forbid(ex.Message);
+            }
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("{id:Guid}")]
         public async Task<IActionResult> DeleteAuction([FromRoute] Guid id)
         {
-            var auctionDto = await auctionsService.DeleteAuctionAsync(id);
-            if (auctionDto == null)
+            try
             {
-                return NotFound();
+                var auctionDto = await auctionsService.DeleteAuctionAsync(id, User);
+                if (auctionDto == null)
+                {
+                    return NotFound();
+                }
+                return Ok(auctionDto);
             }
-            return Ok(auctionDto);
+            catch (Exception ex)
+            {
+                return Forbid(ex.Message);
+            }
         }
 
     }

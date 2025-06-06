@@ -1,4 +1,5 @@
 ﻿using AuctionService.Entities.DTOs;
+using System.Security.Claims;
 
 namespace AuctionService.Services.Interfaces
 {
@@ -6,8 +7,8 @@ namespace AuctionService.Services.Interfaces
     {
         Task<List<AuctionDto>> GetAllAuctionAsync(DateTime? date);
         Task<AuctionDto?> GetAuctionByIdAsync(Guid id);
-        Task<AuctionDto?> CreateAuctionAsync(CreateAuctionDto createAuctionDto);
-        Task<AuctionDto?> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuctionDto);
-        Task<AuctionDto?> DeleteAuctionAsync(Guid id);
+        Task<AuctionDto?> CreateAuctionAsync(CreateAuctionDto createAuctionDto, ClaimsPrincipal user);
+        Task<AuctionDto?> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuctionDto, ClaimsPrincipal user);
+        Task<AuctionDto?> DeleteAuctionAsync(Guid id, ClaimsPrincipal user);
     }
 }

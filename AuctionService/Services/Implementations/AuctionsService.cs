@@ -7,6 +7,7 @@ using AutoMapper.QueryableExtensions;
 using Contracts;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace AuctionService.Services.Implementations
 {
@@ -23,40 +24,43 @@ namespace AuctionService.Services.Implementations
             this.dbContext = dbContext;
         }
 
-        public async Task<AuctionDto?> CreateAuctionAsync(CreateAuctionDto createAuctionDto)
+        public async Task<AuctionDto?> CreateAuctionAsync(CreateAuctionDto createAuctionDto, ClaimsPrincipal user)
         {
             var auction = mapper.Map<Auction>(createAuctionDto);
-            //TODO: add current user as seller
-            auction.Seller = "test";
+        
+            auction.Seller = user.Identity.Name;
 
             await dbContext.AddAsync(auction);
             var newAuction = mapper.Map<AuctionDto>(auction);
 
-            await publishEndpoint.Publish<AuctionCreated>(mapper.Map<AuctionCreated>(newAuction));
+            await publishEndpoint.Publish(mapper.Map<AuctionCreated>(newAuction));
             var result = await dbContext.SaveChangesAsync() > 0;
 
-            return result ? mapper.Map<AuctionDto>(auction) : null;
+            return result ? newAuction : null;
         }
 
-        public async Task<AuctionDto?> DeleteAuctionAsync(Guid id)
+        public async Task<AuctionDto?> DeleteAuctionAsync(Guid id, ClaimsPrincipal user)
         {
-            //TODO: check seller == username
-
-            var auction = await dbContext.Auctions.FirstOrDefaultAsync(x => x.Id == id);
-            if (auction == null)
+            var existingAuction = await dbContext.Auctions.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingAuction == null)
             {
                 return null;
             }
-            dbContext.Auctions.Remove(auction);
+            if (existingAuction.Seller != user.Identity.Name)
+            {
+                throw new Exception("You are not authorized to delete this auction");
+            }
+            dbContext.Auctions.Remove(existingAuction);
 
-            await publishEndpoint.Publish<AuctionDeleted>(new { Id = auction.Id.ToString() });
+            var newAuction = mapper.Map<AuctionDto>(existingAuction);
+            await publishEndpoint.Publish(mapper.Map<AuctionDeleted>(newAuction));
 
             var result = await dbContext.SaveChangesAsync() > 0;
             if (!result)
             {
                 throw new Exception("Problem deleting auction");
             }
-            return mapper.Map<AuctionDto>(auction);
+            return newAuction;
 
         }
 
@@ -87,7 +91,7 @@ namespace AuctionService.Services.Implementations
             return mapper.Map<AuctionDto>(auction);
         }
 
-        public async Task<AuctionDto?> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuctionDto)
+        public async Task<AuctionDto?> UpdateAuctionAsync(Guid id, UpdateAuctionDto updateAuctionDto, ClaimsPrincipal user)
         {
             var updateAuctionDomain = mapper.Map<Auction>(updateAuctionDto);
             var existingAuction = await dbContext.Auctions.Include(x => x.Item).FirstOrDefaultAsync(x => x.Id == id);
@@ -95,7 +99,10 @@ namespace AuctionService.Services.Implementations
             {
                 return null;
             }
-            //TODO: check seller == username
+            if (existingAuction.Seller!=user.Identity.Name)
+            {
+                throw new Exception("You are not authorized to update this auction");
+            }
 
             existingAuction.Item.Make = updateAuctionDomain.Item.Make ?? existingAuction.Item.Make;
             existingAuction.Item.Model = updateAuctionDomain.Item.Model ?? existingAuction.Item.Model;
@@ -103,13 +110,14 @@ namespace AuctionService.Services.Implementations
             existingAuction.Item.Mileage = updateAuctionDomain.Item.Mileage;
             existingAuction.Item.Year = updateAuctionDomain.Item.Year;
 
-            await publishEndpoint.Publish<AuctionUpdated>(mapper.Map<AuctionUpdated>(existingAuction));
+            var newAuction = mapper.Map<AuctionDto>(existingAuction);
+            await publishEndpoint.Publish(mapper.Map<AuctionUpdated>(newAuction));
             var result = await dbContext.SaveChangesAsync() > 0;
             if (!result)
             {
                 throw new Exception("Auction hasn't been updated!");
             }
-            return mapper.Map<AuctionDto>(existingAuction);
+            return newAuction;
         }
     }
 }

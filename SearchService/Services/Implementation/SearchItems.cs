@@ -30,8 +30,7 @@ namespace SearchService.Services.Implementation
         {
             if (!string.IsNullOrEmpty(searchParams.SearchTerm))
             {
-                query.Match(Search.Full, searchParams.SearchTerm)
-                     .SortByTextScore(); // Override sort only if search term is present
+                query.Match(Search.Full, searchParams.SearchTerm).SortByTextScore(); // Override sort only if search term is present
             }
 
             if (!string.IsNullOrEmpty(searchParams.Seller))

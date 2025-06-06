@@ -21,7 +21,7 @@ namespace SearchService.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchItems([FromQuery]SearchParams searchParams)
         {
-            var result = await  searchService.SearchItemAsync(searchParams);
+            var result = await searchService.SearchItemAsync(searchParams);
 
             return Ok(new
             {

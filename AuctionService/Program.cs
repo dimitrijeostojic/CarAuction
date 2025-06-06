@@ -36,36 +36,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//builder.Services.AddSwaggerGen(options =>
-//{
-//options.SwaggerDoc("v1", new OpenApiInfo { Title = "WebShop API", Version = "v1" });
-//options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-//{
-//Name = "Authorization",
-//In = ParameterLocation.Header,
-//Type = SecuritySchemeType.ApiKey,
-//Scheme = JwtBearerDefaults.AuthenticationScheme
-//});
 
-//options.AddSecurityRequirement(new OpenApiSecurityRequirement
-//    {
-//        {
-//            new OpenApiSecurityScheme
-//            {
-//                Reference=new OpenApiReference
-//                {
-//                    Type=ReferenceType.SecurityScheme,
-//                    Id=JwtBearerDefaults.AuthenticationScheme
-//                },
-//                Scheme = "Oauth2",
-//                Name = JwtBearerDefaults.AuthenticationScheme,
-//        In = ParameterLocation.Header,
-//            },
-//            new List<string>()
-//        }
-//    });
-
-//});
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 //adding masstransit for producer
@@ -79,6 +50,7 @@ builder.Services.AddMassTransit(x =>
     });
 
     x.AddConsumersFromNamespaceContaining<AuctionCreatedFaultConsumer>();
+
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("auction", false));
 
     x.UsingRabbitMq((context, cfg) =>
@@ -88,39 +60,12 @@ builder.Services.AddMassTransit(x =>
 });
 
 
-//dodajemo konekcione stringove iz konfiguracije
+//add conn strings from configuration
 builder.Services.AddDbContext<AuctionDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 
 //services
 builder.Services.AddScoped<IAuctionsService, AuctionsService>();
 
-
-//builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
-
-//builder.Services.AddIdentityCore<ApplicationUser>() //konfiguracija identity servisa
-//   .AddRoles<IdentityRole>() //dodavanje podrske za role
-//   .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("WebShop") //dodavanje token provajdera
-//   .AddEntityFrameworkStores<WebShopAuthDbContext>() //podesavanje entity framework skladista
-//   .AddDefaultTokenProviders(); //dodavanje podrazumevanih token provajdera
-
-//konfiguracija opcija identiteta
-//builder.Services.Configure<IdentityOptions>(options =>
-//{
-//postavke za lozinku korisnika
-//options.Password.RequireDigit = false;
-//options.Password.RequireLowercase = false;
-//options.Password.RequireNonAlphanumeric = false;
-//options.Password.RequireUppercase = false;
-//options.Password.RequiredLength = 6;
-//options.Password.RequiredUniqueChars = 1;
-
-//options.Lockout.AllowedForNewUsers = true;
-//options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-//options.Lockout.MaxFailedAccessAttempts = 5;
-
-//options.User.RequireUniqueEmail = false;
-//});
 
 //builder.Services.ConfigureApplicationCookie(options =>
 //{
@@ -131,7 +76,7 @@ builder.Services.AddScoped<IAuctionsService, AuctionsService>();
 //options.SlidingExpiration = true;
 //});
 
-//dodajemo pravila za autentikaciju
+//add rules for authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.Authority = builder.Configuration["IdentityServiceUrl"];
@@ -141,7 +86,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 });
 
-//cors konfiguracija
+//cors configuration
 builder.Services.AddCors(options =>
 {
 options.AddPolicy("AllowAllOrigins",

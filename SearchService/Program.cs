@@ -11,9 +11,21 @@ using SearchService.Middlewares;
 using SearchService.Models;
 using SearchService.Services.Implementation;
 using SearchService.Services.Interfaces;
+using Serilog;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+//Log to txt file
+var logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/SearchServiceLog.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+//This is required
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 // Add services to the container.
 
@@ -32,6 +44,11 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", h =>
+        {
+            h.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            h.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
         cfg.ReceiveEndpoint("search-auction-created", e =>
         {
             e.UseMessageRetry(r => r.Interval(5, 5));

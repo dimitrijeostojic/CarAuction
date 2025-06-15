@@ -1,6 +1,23 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+var logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/GatewayServiceLog.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog((ctx, config) =>
+{
+    config
+        .MinimumLevel.Information()
+        .WriteTo.Console()
+        .WriteTo.File("Logs/GatewayLog.txt", rollingInterval: RollingInterval.Day)
+        .ReadFrom.Configuration(ctx.Configuration); // koristi appsettings ako želiš
+});
+
+
 
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -16,6 +33,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging(); // <-- loguje sve HTTP requestove automatski
 app.MapReverseProxy();
 app.UseAuthentication();
 app.UseAuthorization();

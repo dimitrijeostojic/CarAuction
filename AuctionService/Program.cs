@@ -15,20 +15,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Log to txt file
-//var logger = new LoggerConfiguration()
-//    .WriteTo.Console()
-//    .WriteTo.File("Logs/WebShopLogs.txt", rollingInterval: RollingInterval.Day)
-//    .MinimumLevel.Warning()
-//    .CreateLogger();
+var logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/AuctionServiceLog.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 //This is required
 builder.Logging.ClearProviders();
-//builder.Logging.AddSerilog(logger);
+builder.Logging.AddSerilog(logger);
 
 // Add services to the container.
 
@@ -55,6 +56,11 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", h =>
+        {
+            h.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            h.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
         cfg.ConfigureEndpoints(context);
     });
 });

@@ -1,96 +1,140 @@
-﻿using AuctionService.Entities.Domain;
-using AuctionService.Entities.DTOs;
+﻿using AuctionService.Entities.DTOs;
 using AuctionService.Services.Interfaces;
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
-namespace AuctionService.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class AuctionsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuctionsController : ControllerBase
+    private readonly IAuctionsService auctionsService;
+    private readonly ILogger<AuctionsController> logger;
+
+    public AuctionsController(IAuctionsService auctionsService, ILogger<AuctionsController> logger)
     {
+        this.auctionsService = auctionsService;
+        this.logger = logger;
+    }
 
-        private readonly IAuctionsService auctionsService;
-
-        public AuctionsController(IAuctionsService auctionsService)
+    [HttpGet]
+    public async Task<IActionResult> GetAllAuctions([FromQuery] DateTime? date)
+    {
+        try
         {
-            this.auctionsService = auctionsService;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllAuctions([FromQuery] DateTime? date)
-        {
+            logger.LogInformation($"Fetching all auctions with date filter: {date?.ToString() ?? "none"}");
             var auctionsDto = await auctionsService.GetAllAuctionAsync(date);
+            logger.LogInformation($"Successfully fetched {auctionsDto?.Count()} auctions");
             return Ok(auctionsDto);
         }
-
-
-        [HttpGet]
-        [Route("{id:Guid}")]
-        public async Task<IActionResult> GetAuctionById([FromRoute] Guid id)
+        catch (Exception ex)
         {
+            logger.LogError(ex, $"Error occurred while fetching all auctions: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("{id:Guid}")]
+    public async Task<IActionResult> GetAuctionById(Guid id)
+    {
+        try
+        {
+            logger.LogInformation($"Fetching auction with ID: {id}");
             var auctionDto = await auctionsService.GetAuctionByIdAsync(id);
+
             if (auctionDto == null)
             {
+                logger.LogWarning($"Auction with ID {id} not found");
                 return NotFound();
             }
+
+            logger.LogInformation($"Auction with ID {id} successfully fetched");
             return Ok(auctionDto);
         }
-
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionDto createAuctionDto)
+        catch (Exception ex)
         {
-            var auctionDto = await auctionsService.CreateAuctionAsync(createAuctionDto,User);
+            logger.LogError(ex, $"Error occurred while fetching auction with ID {id}: {ex.Message}");
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionDto createAuctionDto)
+    {
+        try
+        {
+            logger.LogInformation("Creating a new auction...");
+            logger.LogDebug($"CreateAuctionDto: {JsonSerializer.Serialize(createAuctionDto)}");
+
+            var auctionDto = await auctionsService.CreateAuctionAsync(createAuctionDto, User);
+
             if (auctionDto == null)
             {
+                logger.LogWarning("Auction creation failed");
                 return BadRequest("Auction creation failed");
             }
+
+            logger.LogInformation($"Auction created with ID: {auctionDto.Id}");
             return CreatedAtAction(nameof(GetAuctionById), new { id = auctionDto.Id }, auctionDto);
         }
-
-        [Authorize]
-        [HttpPut]
-        [Route("{id:Guid}")]
-        public async Task<IActionResult> UpdateAuction([FromRoute] Guid id, [FromBody] UpdateAuctionDto updateAuctionDto)
+        catch (Exception ex)
         {
-            try
-            {
-                var auctionDto = await auctionsService.UpdateAuctionAsync(id, updateAuctionDto, User);
-                if (auctionDto == null)
-                {
-                    return NotFound();
-                }
-                return Ok(auctionDto);
-            }
-            catch (Exception ex)
-            {
-                return Forbid(ex.Message);
-            }
+            logger.LogError(ex, $"Error occurred while creating auction: {ex.Message}");
+            return StatusCode(500, "Internal server error");
         }
+    }
 
-        [Authorize]
-        [HttpDelete]
-        [Route("{id:Guid}")]
-        public async Task<IActionResult> DeleteAuction([FromRoute] Guid id)
+    [Authorize]
+    [HttpPut("{id:Guid}")]
+    public async Task<IActionResult> UpdateAuction(Guid id, [FromBody] UpdateAuctionDto updateAuctionDto)
+    {
+        try
         {
-            try
-            {
-                var auctionDto = await auctionsService.DeleteAuctionAsync(id, User);
-                if (auctionDto == null)
-                {
-                    return NotFound();
-                }
-                return Ok(auctionDto);
-            }
-            catch (Exception ex)
-            {
-                return Forbid(ex.Message);
-            }
-        }
+            logger.LogInformation($"Updating auction with ID: {id}");
+            logger.LogDebug($"UpdateAuctionDto: {JsonSerializer.Serialize(updateAuctionDto)}");
 
+            var auctionDto = await auctionsService.UpdateAuctionAsync(id, updateAuctionDto, User);
+
+            if (auctionDto == null)
+            {
+                logger.LogWarning($"Auction with ID {id} not found for update");
+                return NotFound();
+            }
+
+            logger.LogInformation($"Auction with ID {id} successfully updated");
+            return Ok(auctionDto);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error occurred while updating auction with ID {id}: {ex.Message}");
+            return Forbid("Update failed");
+        }
+    }
+
+    [Authorize]
+    [HttpDelete("{id:Guid}")]
+    public async Task<IActionResult> DeleteAuction(Guid id)
+    {
+        try
+        {
+            logger.LogInformation($"Deleting auction with ID: {id}");
+
+            var auctionDto = await auctionsService.DeleteAuctionAsync(id, User);
+
+            if (auctionDto == null)
+            {
+                logger.LogWarning($"Auction with ID {id} not found for deletion");
+                return NotFound();
+            }
+
+            logger.LogInformation($"Auction with ID {id} successfully deleted");
+            return Ok(auctionDto);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error occurred while deleting auction with ID {id}: {ex.Message}");
+            return Forbid("Delete failed");
+        }
     }
 }

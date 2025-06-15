@@ -5,7 +5,9 @@ using IdentityService;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Warning()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .WriteTo.File("Logs/IdentityServiceLog.txt", rollingInterval: RollingInterval.Day)
     .CreateBootstrapLogger();
 
 Log.Information("Starting up");

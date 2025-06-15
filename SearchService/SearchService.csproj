@@ -6,17 +6,37 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+	<PropertyGroup>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Dockerfile" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Dockerfile" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="9.0.4" />
     <PackageReference Include="MongoDB.Entities" Version="24.1.1" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AuctionService\AuctionService.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Logs\" />
   </ItemGroup>
 
 </Project>

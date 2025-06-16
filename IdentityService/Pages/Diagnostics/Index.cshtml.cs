@@ -16,7 +16,7 @@ public class Index : PageModel
         //Replace with an authorization policy check
         if (HttpContext.Connection.IsRemote())
         {
-            return NotFound();
+            ViewData["Message"] = "Your application description page from within a container";
         }
 
         View = new ViewModel(await HttpContext.AuthenticateAsync());

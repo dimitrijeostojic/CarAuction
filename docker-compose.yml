@@ -8,12 +8,31 @@ services:
       - 27017:27017
     volumes:
       - mongodata:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "127.0.0.1/test",
+          "--eval",
+          "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:4-management-alpine
     ports:
       - 5672:5672
       - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -27,6 +46,12 @@ services:
       - 1533:1433
     volumes:
       - sqlserver:/var/opt/mssql/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Sqlserverpw1# -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
   auction-svc:
     image: dimi01/auction-svc:latest
@@ -42,8 +67,12 @@ services:
     ports:
       - 7001:80
     depends_on:
-      - rabbitmq
       - mssql
+      - rabbitmq
+      # mssql:
+      #  condition: service_healthy
+      # rabbitmq:
+      #  condition: service_healthy
 
   search-svc:
     image: dimi01/search-svc:latest
@@ -59,8 +88,10 @@ services:
     ports:
       - 7002:80
     depends_on:
-      - mongodb
-      - rabbitmq
+      mongodb:
+       condition: service_healthy
+      rabbitmq:
+       condition: service_healthy
 
   identity-svc:
     image: dimi01/identity-svc:latest
@@ -68,13 +99,15 @@ services:
       context: .
       dockerfile: IdentityService/Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Server=mssql;Database=Identity;User Id=sa;Password=Sqlserverpw1#;Trusted_Connection=False;TrustServerCertificate=True;
     ports:
       - 5001:80
     depends_on:
-      - mssql
+       - mssql
+      # mssql:
+      #  condition: service_healthy
 
   gateway-svc:
     image: dimi01/gateway-svc:latest
@@ -84,7 +117,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - IdentityServiceUrl=http://identity-svc
       - ReverseProxy__Clusters__auctions__Destinations__auctionApi__Address=http://auction-svc
       - ReverseProxy__Clusters__search__Destinations__searchApi__Address=http://search-svc
     ports:

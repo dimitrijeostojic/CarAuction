@@ -13,7 +13,7 @@ RUN dotnet restore ./GatewayService/GatewayService.csproj
 COPY . .
 
 # Publish
-RUN dotnet publish ./GatewayService/GatewayService.csproj -c Release -o /app/publish
+RUN dotnet publish ./GatewayService/GatewayService.csproj -c Debug -o /app/publish
 
 # Stage 2 - Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime

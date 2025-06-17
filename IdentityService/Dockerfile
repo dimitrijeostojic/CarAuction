@@ -13,7 +13,7 @@ RUN dotnet restore ./IdentityService/IdentityService.csproj
 COPY . .
 
 # Publish
-RUN dotnet publish ./IdentityService/IdentityService.csproj -c Release -o /app/publish
+RUN dotnet publish ./IdentityService/IdentityService.csproj -c Debug -o /app/publish
 
 # Stage 2 - Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime

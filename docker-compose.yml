@@ -8,31 +8,31 @@ services:
       - 27017:27017
     volumes:
       - mongodata:/data/db
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "mongosh",
-          "--quiet",
-          "127.0.0.1/test",
-          "--eval",
-          "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 40s
+    # healthcheck:
+    #   test:
+    #     [
+    #       "CMD",
+    #       "mongosh",
+    #       "--quiet",
+    #       "127.0.0.1/test",
+    #       "--eval",
+    #       "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'",
+    #     ]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 40s
 
   rabbitmq:
     image: rabbitmq:4-management-alpine
     ports:
       - 5672:5672
       - 15672:15672
-    healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 5s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: rabbitmq-diagnostics check_port_connectivity
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 5
 
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -45,13 +45,13 @@ services:
     ports:
       - 1533:1433
     volumes:
-      - sqlserver:/var/opt/mssql/data
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Sqlserverpw1# -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 40s
+      - sqlserver:/data/db
+    # healthcheck:
+    #   test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P Sqlserverpw1# -Q 'SELECT 1' || exit 1"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 40s
 
   auction-svc:
     image: dimi01/auction-svc:latest
@@ -88,10 +88,12 @@ services:
     ports:
       - 7002:80
     depends_on:
-      mongodb:
-       condition: service_healthy
-      rabbitmq:
-       condition: service_healthy
+      - mongodb
+      - rabbitmq
+      # mongodb:
+      #  condition: service_healthy
+      # rabbitmq:
+      #  condition: service_healthy
 
   identity-svc:
     image: dimi01/identity-svc:latest

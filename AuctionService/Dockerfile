@@ -14,7 +14,7 @@ RUN dotnet restore ./AuctionService/AuctionService.csproj
 COPY . .
 
 # Publish
-RUN dotnet publish ./AuctionService/AuctionService.csproj -c Release -o /app/publish
+RUN dotnet publish ./AuctionService/AuctionService.csproj -c Debug -o /app/publish
 
 # Stage 2 - Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime

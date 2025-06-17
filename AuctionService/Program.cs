@@ -89,6 +89,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.RequireHttpsMetadata = false; // Set to true in production
     options.TokenValidationParameters.ValidateAudience = false; // Disable audience validation for simplicity
     options.TokenValidationParameters.NameClaimType="username"; // Set the claim type for username
+    options.TokenValidationParameters.ValidIssuer = builder.Configuration["IdentityServiceUrl"]; // Set the valid issuer
 
 });
 

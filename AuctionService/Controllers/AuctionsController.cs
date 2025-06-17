@@ -58,7 +58,7 @@ public class AuctionsController : ControllerBase
         }
     }
 
-    [Authorize]
+    
     [HttpPost]
     public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionDto createAuctionDto)
     {
@@ -85,7 +85,6 @@ public class AuctionsController : ControllerBase
         }
     }
 
-    [Authorize]
     [HttpPut("{id:Guid}")]
     public async Task<IActionResult> UpdateAuction(Guid id, [FromBody] UpdateAuctionDto updateAuctionDto)
     {
@@ -112,7 +111,6 @@ public class AuctionsController : ControllerBase
         }
     }
 
-    [Authorize]
     [HttpDelete("{id:Guid}")]
     public async Task<IActionResult> DeleteAuction(Guid id)
     {

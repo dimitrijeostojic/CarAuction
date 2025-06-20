@@ -60,6 +60,7 @@ public class AuctionsController : ControllerBase
 
     
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> CreateAuction([FromBody] CreateAuctionDto createAuctionDto)
     {
         try

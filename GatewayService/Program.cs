@@ -17,8 +17,6 @@ builder.Host.UseSerilog((ctx, config) =>
         .ReadFrom.Configuration(ctx.Configuration); // koristi appsettings ako želiš
 });
 
-
-
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 //add rules for authentication
@@ -28,14 +26,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.RequireHttpsMetadata = false; // Set to true in production
     options.TokenValidationParameters.ValidateAudience = false; // Disable audience validation for simplicity
     options.TokenValidationParameters.NameClaimType = "username"; // Set the claim type for username
-
+    options.TokenValidationParameters.ValidIssuer = builder.Configuration["IdentityServiceUrl"];
 });
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging(); // <-- loguje sve HTTP requestove automatski
+app.UseSerilogRequestLogging(); // <-- log every http requests automatically
 app.MapReverseProxy();
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.Run();

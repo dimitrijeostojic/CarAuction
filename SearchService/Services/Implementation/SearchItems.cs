@@ -43,8 +43,8 @@ namespace SearchService.Services.Implementation
             {
                 "finished" => query.Match(x => x.AuctionEnd < DateTime.UtcNow),
                 "endingSoon" => query.Match(x => x.AuctionEnd < DateTime.UtcNow.AddHours(6) && x.AuctionEnd > DateTime.UtcNow),
-                _ => query.Match(x=>true)
-            };
+                _ => query.Match(x => x.AuctionEnd > DateTime.UtcNow)
+            } ;
 
             return query;
         }

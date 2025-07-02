@@ -40,7 +40,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
-//adding masstransit for producer
 builder.Services.AddMassTransit(x =>
 {
     x.AddEntityFrameworkOutbox<AuctionDbContext>(o =>

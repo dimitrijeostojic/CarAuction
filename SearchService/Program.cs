@@ -1,4 +1,4 @@
-using MassTransit;
+ using MassTransit;
 using Microsoft.EntityFrameworkCore.Internal;
 using MongoDB.Driver;
 using MongoDB.Entities;

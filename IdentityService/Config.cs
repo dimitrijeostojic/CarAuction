@@ -34,12 +34,13 @@ public static class Config
                 ClientId="nextApp",
                 ClientName ="nextApp",
                 ClientSecrets = new[] { new Secret("secret".Sha256()) },
-                AllowedGrantTypes={GrantType.ClientCredentials },
-                RequirePkce = false,
-                RedirectUris={ "http://localhost:3000/api/callback/id-server" },
+                AllowedGrantTypes=GrantTypes.Code,
+                RequirePkce = true,
+                RedirectUris={ "http://localhost:3000/api/auth/callback/id-server","http://localhost:3001/api/auth/callback/id-server","http://localhost:3002/api/auth/callback/id-server","http://localhost:3003/api/auth/callback/id-server" },
                 AllowOfflineAccess = true,
                 AllowedScopes = { "openid", "profile", "auctionApp" },
-                AccessTokenLifetime = 3600*24*30
+                AccessTokenLifetime = 3600*24*30,
+                AlwaysIncludeUserClaimsInIdToken = true
             }
         };
 }

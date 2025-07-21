@@ -12,11 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuctionService.Migrations
 {
     [DbContext(typeof(AuctionDbContext))]
-<<<<<<<< HEAD:AuctionService/Migrations/20250721122956_InitialMigration.Designer.cs
-    [Migration("20250721122956_InitialMigration")]
-========
-    [Migration("20250717153743_InitialMigration")]
->>>>>>>> cfac556d1ef90f627e3d7bd68d7bab09501b650c:AuctionService/Migrations/20250717153743_InitialMigration.Designer.cs
+    [Migration("20250721125124_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -86,7 +82,7 @@ namespace AuctionService.Migrations
                             MyProperty = 0,
                             ReservePrice = 20000,
                             Seller = "bob",
-                            Status = 1,
+                            Status = 0,
                             UpdatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -98,7 +94,7 @@ namespace AuctionService.Migrations
                             MyProperty = 0,
                             ReservePrice = 90000,
                             Seller = "alice",
-                            Status = 1,
+                            Status = 0,
                             UpdatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -110,7 +106,7 @@ namespace AuctionService.Migrations
                             MyProperty = 0,
                             ReservePrice = 0,
                             Seller = "bob",
-                            Status = 1,
+                            Status = 0,
                             UpdatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -152,7 +148,7 @@ namespace AuctionService.Migrations
                         new
                         {
                             Id = new Guid("47111973-d176-4feb-848d-0ea22641c31a"),
-                            AuctionEnd = new DateTime(2025, 9, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 5, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("d3f9cf03-8a07-493d-9945-2cba4e3e1360"),
                             MyProperty = 0,
@@ -176,7 +172,7 @@ namespace AuctionService.Migrations
                         new
                         {
                             Id = new Guid("40490065-dac7-46b6-acc4-df507e0d6570"),
-                            AuctionEnd = new DateTime(2025, 11, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("d90c328e-a26c-492d-b7c5-3ec037d1919d"),
                             MyProperty = 0,
@@ -188,7 +184,7 @@ namespace AuctionService.Migrations
                         new
                         {
                             Id = new Guid("3659ac24-29dd-407a-81f5-ecfe6f924b9b"),
-                            AuctionEnd = new DateTime(2025, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("9be53e24-81e5-4e38-ab15-c14b2920c8ea"),
                             MyProperty = 0,

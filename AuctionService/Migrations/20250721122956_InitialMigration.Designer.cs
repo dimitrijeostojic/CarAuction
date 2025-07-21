@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuctionService.Migrations
 {
     [DbContext(typeof(AuctionDbContext))]
-    [Migration("20250606125140_InitialMigration")]
+    [Migration("20250721122956_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -76,7 +76,7 @@ namespace AuctionService.Migrations
                         new
                         {
                             Id = new Guid("afbee524-5972-4075-8800-7d1f9d7b0a0c"),
-                            AuctionEnd = new DateTime(2025, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("247f3fd9-d34d-4f72-8f2c-c38a4be7e3a4"),
                             MyProperty = 0,
@@ -88,7 +88,7 @@ namespace AuctionService.Migrations
                         new
                         {
                             Id = new Guid("c8c3ec17-01bf-49db-82aa-1ef80b833a9f"),
-                            AuctionEnd = new DateTime(2025, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 8, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("1e64b61f-56a2-41c4-84b2-7db83be6eb5a"),
                             MyProperty = 0,
@@ -100,7 +100,7 @@ namespace AuctionService.Migrations
                         new
                         {
                             Id = new Guid("bbab4d5a-8565-48b1-9450-5ac2a5c4a654"),
-                            AuctionEnd = new DateTime(2025, 5, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("d166d7c7-ec02-4b1d-9f0a-0841c03c2374"),
                             MyProperty = 0,
@@ -130,13 +130,13 @@ namespace AuctionService.Migrations
                             MyProperty = 0,
                             ReservePrice = 20000,
                             Seller = "alice",
-                            Status = 0,
+                            Status = 1,
                             UpdatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = new Guid("dc1e4071-d19d-459b-b848-b5c3cd3d151f"),
-                            AuctionEnd = new DateTime(2025, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("a2510c14-f119-4717-b4d5-c3eefe4b5782"),
                             MyProperty = 0,
@@ -154,13 +154,13 @@ namespace AuctionService.Migrations
                             MyProperty = 0,
                             ReservePrice = 150000,
                             Seller = "alice",
-                            Status = 0,
+                            Status = 1,
                             UpdatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = new Guid("6a5011a1-fe1f-47df-9a32-b5346b289391"),
-                            AuctionEnd = new DateTime(2025, 5, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            AuctionEnd = new DateTime(2025, 9, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ItemId = new Guid("a899e12c-3ddd-4cab-ae66-d6031a4b626f"),
                             MyProperty = 0,
@@ -178,7 +178,7 @@ namespace AuctionService.Migrations
                             MyProperty = 0,
                             ReservePrice = 20000,
                             Seller = "tom",
-                            Status = 0,
+                            Status = 1,
                             UpdatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
@@ -190,7 +190,7 @@ namespace AuctionService.Migrations
                             MyProperty = 0,
                             ReservePrice = 20000,
                             Seller = "bob",
-                            Status = 0,
+                            Status = 1,
                             UpdatedAt = new DateTime(2025, 4, 29, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });

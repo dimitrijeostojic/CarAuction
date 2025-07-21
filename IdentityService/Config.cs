@@ -1,4 +1,4 @@
-using Duende.IdentityServer.Models;
+﻿using Duende.IdentityServer.Models;
 
 namespace IdentityService;
 
@@ -29,18 +29,24 @@ public static class Config
                 ClientSecrets = new[] { new Secret("NotASecret".Sha256()) },
                 AllowedGrantTypes={GrantType.ResourceOwnerPassword }
             },
-            new Client
+           new Client
             {
-                ClientId="nextApp",
-                ClientName ="nextApp",
-                ClientSecrets = new[] { new Secret("secret".Sha256()) },
-                AllowedGrantTypes=GrantTypes.Code,
+                ClientId = "nextApp",
+                ClientSecrets = { new Secret("secret".Sha256()) },
+                AllowedGrantTypes = GrantTypes.Code,
                 RequirePkce = true,
-                RedirectUris={ "http://localhost:3000/api/auth/callback/id-server","http://localhost:3001/api/auth/callback/id-server","http://localhost:3002/api/auth/callback/id-server","http://localhost:3003/api/auth/callback/id-server" },
+                RedirectUris = {
+                    "http://localhost:3000/api/auth/callback/id-server"
+                },
+                AllowedCorsOrigins = {
+                    "http://localhost:3000"
+                },
+                AllowedScopes = {
+                    "openid", "profile", "auctionApp"
+                },
                 AllowOfflineAccess = true,
-                AllowedScopes = { "openid", "profile", "auctionApp" },
-                AccessTokenLifetime = 3600*24*30,
                 AlwaysIncludeUserClaimsInIdToken = true
             }
+
         };
 }
